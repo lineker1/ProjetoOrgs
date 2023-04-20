@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.lifecycleScope
 import br.com.alura.orgs.database.AppDatabase
 import br.com.alura.orgs.databinding.ActivityLoginBinding
 import br.com.alura.orgs.extensions.vaiPara
+import br.com.alura.orgs.preferences.dataStore
+import br.com.alura.orgs.preferences.usuarioLogadoPreferences
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
@@ -33,13 +36,14 @@ class LoginActivity : AppCompatActivity() {
             val senha = binding.activityLoginSenha.text.toString()
             Log.i("LoginActivity", "onCreate: $usuario - $senha")
             lifecycleScope.launch {
-                usuarioDao.autentica(usuario, senha)?.let {usuario ->
-                    vaiPara(ListaProdutosActivity::class.java){
-                        putExtra("CHAVE_CADASTRO_ID", usuario.id)
+                usuarioDao.autentica(usuario, senha)?.let { usuario ->
+                    dataStore.edit { preferences ->
+                        preferences[usuarioLogadoPreferences] = usuario.id
                     }
+                    vaiPara(ListaProdutosActivity::class.java)
                 } ?: Toast.makeText(
                     this@LoginActivity,
-                    "Login ou senha incorreto",
+                    "Usuário ou senha incorretos",
                     Toast.LENGTH_SHORT
                 ).show()
             }
