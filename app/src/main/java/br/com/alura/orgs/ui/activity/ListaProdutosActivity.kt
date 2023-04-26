@@ -2,7 +2,6 @@ package br.com.alura.orgs.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.lifecycle.lifecycleScope
@@ -37,15 +36,14 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
                 usuario
                     .filterNotNull()
                     .collect {
-                        Log.i("Lista Produtos", "onCreate:$it ")
-                        buscaProdutosUsuario()
+                        buscaProdutosUsuario(it.id)
                     }
             }
         }
     }
 
-    private suspend fun buscaProdutosUsuario() {
-        produtoDao.buscaTodos().collect { produtos ->
+    private suspend fun buscaProdutosUsuario(usuarioId: String) {
+        produtoDao.busdcaTodosDoUsuario(usuarioId).collect { produtos ->
             adapter.atualiza(produtos)
         }
     }
